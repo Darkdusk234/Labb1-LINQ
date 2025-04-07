@@ -6,8 +6,7 @@ namespace Labb1_LINQ.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        public string OrderDate { get; set; } = string.Empty;
+        public DateTime OrderDate { get; set; }
 
         public int CustomerId { get; set; }
 
