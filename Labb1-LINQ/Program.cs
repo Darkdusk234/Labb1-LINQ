@@ -7,11 +7,11 @@ namespace Labb1_LINQ
     {
         static void Main(string[] args)
         {
-            //GetProductsByCategoryOrderPrice("Electronics");
+            //GetProductsByCategoryPriceOrder("Electronics");
             GetSupplierWithLowStockAmount();
         }
 
-        public static void GetProductsByCategoryOrderPrice(string category)
+        public static void GetProductsByCategoryPriceOrder(string category)
         {
             using (var context = new InternetShopContext())
             {
@@ -28,7 +28,7 @@ namespace Labb1_LINQ
 
                         foreach (var product in products)
                         {
-                            Console.WriteLine($"| {product.Name} |  {product.Description} |  {product.Price} |  {product.StockQuantity} |");
+                            Console.WriteLine($"| {product.Name} |  {(product.Description != null ? product.Description : "N/A")} |  {product.Price} |  {product.StockQuantity} |");
                         }
                     }
                 }
