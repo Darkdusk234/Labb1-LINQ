@@ -40,6 +40,8 @@ namespace Labb1_LINQ.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            SeedData(modelBuilder);
         }
 
         private void SeedData(ModelBuilder modelBuilder)
