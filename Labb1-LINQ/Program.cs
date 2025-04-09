@@ -19,31 +19,40 @@ namespace Labb1_LINQ
                 Console.WriteLine("Skriv nummret av den metod du vill testa.");
                 Console.WriteLine("1. Hämta alla produkter i Elektronics kategorin sorterat efter största pris.");
                 Console.WriteLine("2. Hämta alla levrantörer som har produkter där lagersaldot är under tio.");
-                Console.WriteLine("3. Avsluta programmet.");
+                Console.WriteLine("3. Hämta det totala order värdet för alla ordrar gjorda den senaste månaden");
+                Console.WriteLine("4. Avsluta programmet.");
 
                 int choice = 0;
 
                 while (!int.TryParse(Console.ReadLine(), out choice))
                 {
-                    Console.WriteLine("Skriv endast siffror");
+                    Console.WriteLine("Skriv endast siffror. Tryck på enter för att försöka igen.");
+                    Console.ReadLine();
                 }
 
                 switch(choice)
                 {
                     case 1:
-                        GetProductsByCategoryPriceOrder("Electronics");
+                        PrintProductsByCategoryPriceOrder("Electronics");
                         break;
                     case 2:
-                        GetSupplierWithLowStockAmount();
+                        PrintSupplierWithLowStockAmount();
                         break;
                     case 3:
+                        PrintTotalOrderValueOfLastMonthsOrders();
+                        break;
+                    case 4:
                         loopActive = false;
+                        break;
+                    default:
+                        Console.WriteLine("Ogiltligt val, skriv endast de siffor som finns som alternativ. Tryck på enter för att försöka igen");
+                        Console.ReadLine();
                         break;
                 }
             }
         }
 
-        public static void GetProductsByCategoryPriceOrder(string category)
+        public static void PrintProductsByCategoryPriceOrder(string category)
         {
             using (var context = new InternetShopContext())
             {
@@ -76,9 +85,10 @@ namespace Labb1_LINQ
             }
         }
 
-        public static void GetSupplierWithLowStockAmount()
+        public static void PrintSupplierWithLowStockAmount()
         {
-            using (var context = new InternetShopContext()) {
+            using (var context = new InternetShopContext()) 
+            {
                 try
                 {
                     var suppliers = context.Products
@@ -105,6 +115,34 @@ namespace Labb1_LINQ
                     }
                 }
                 catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        public static void PrintTotalOrderValueOfLastMonthsOrders()
+        {
+            using(var context = new InternetShopContext())
+            {
+                try
+                {
+                    var orderTotal = context.Orders
+                        .Where(o => o.OrderDate >= DateTime.Now.AddDays(-31))
+                        .Select(o => o.TotalAmount)
+                        .Sum();
+
+                    if(orderTotal != 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"Totala värdet av alla ordrar gjorda inom 30 dagar är: {orderTotal} kr.");
+
+                        Console.WriteLine();
+                        Console.WriteLine("Tryck enter för att gå tillbaka till menyn.");
+                        Console.ReadLine();
+                    }
+                }
+                catch(Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
