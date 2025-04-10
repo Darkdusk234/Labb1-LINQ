@@ -20,7 +20,8 @@ namespace Labb1_LINQ
                 Console.WriteLine("1. Hämta alla produkter i Elektronics kategorin sorterat efter största pris.");
                 Console.WriteLine("2. Hämta alla levrantörer som har produkter där lagersaldot är under tio.");
                 Console.WriteLine("3. Hämta det totala order värdet för alla ordrar gjorda den senaste månaden");
-                Console.WriteLine("4. Avsluta programmet.");
+                Console.WriteLine("4. Hämta de tre mest köpta produkterna");
+                Console.WriteLine("5. Avsluta programmet.");
 
                 int choice = 0;
 
@@ -42,6 +43,9 @@ namespace Labb1_LINQ
                         PrintTotalOrderValueOfLastMonthsOrders();
                         break;
                     case 4:
+                        PrintThreeMostOrderedProducts();
+                        break;
+                    case 5:
                         loopActive = false;
                         break;
                     default:
@@ -102,7 +106,7 @@ namespace Labb1_LINQ
                         suppliers = suppliers.Distinct().ToList();
 
                         Console.Clear();
-                        Console.WriteLine("| Företags Namn |  Kontaktperson | Email | Telefonnummer |");
+                        Console.WriteLine("| Företags Namn | Kontaktperson | Email | Telefonnummer |");
 
                         foreach (var supplier in suppliers)
                         {
@@ -143,6 +147,41 @@ namespace Labb1_LINQ
                     }
                 }
                 catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        public static void PrintThreeMostOrderedProducts()
+        {
+            using( var context = new InternetShopContext())
+            {
+                try
+                {
+                    var popularProducts = context.OrderDetails
+                        .Include(p => p.Product)
+                        .GroupBy(p => p.ProductId)
+                        .OrderByDescending(g => g.Count())
+                        .Take(3)
+                        .Select(p => new { p.First().Product.Name, p.First().Product.Description, p.First().Product.Price });
+
+                    if (popularProducts != null)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("| Produkt namn |  Produkt beskrvning | Produkt pris |");
+
+                        foreach (var product in popularProducts)
+                        {
+                            Console.WriteLine($"| {product.Name} | {product.Description} | {product.Price} |");
+                        }
+
+                        Console.WriteLine();
+                        Console.WriteLine("Tryck enter för att gå tillbaka till menyn.");
+                        Console.ReadLine();
+                    }
+                }
+                catch ( Exception ex )
                 {
                     Console.WriteLine(ex.Message);
                 }
