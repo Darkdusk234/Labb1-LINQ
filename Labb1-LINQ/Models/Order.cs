@@ -15,6 +15,6 @@ namespace Labb1_LINQ.Models
         public string? Status { get; set; }
 
         //Navigation Properties
-        public Customer Customer { get; set; }
+        public Customer Customer { get; set; } = null!;
     }
 }

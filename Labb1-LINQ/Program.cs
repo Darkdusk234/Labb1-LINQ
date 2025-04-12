@@ -19,9 +19,10 @@ namespace Labb1_LINQ
                 Console.WriteLine("Skriv nummret av den metod du vill testa.");
                 Console.WriteLine("1. Hämta alla produkter i Elektronics kategorin sorterat efter största pris.");
                 Console.WriteLine("2. Hämta alla levrantörer som har produkter där lagersaldot är under tio.");
-                Console.WriteLine("3. Hämta det totala order värdet för alla ordrar gjorda den senaste månaden");
-                Console.WriteLine("4. Hämta de tre mest köpta produkterna");
-                Console.WriteLine("5. Avsluta programmet.");
+                Console.WriteLine("3. Hämta det totala order värdet för alla ordrar gjorda den senaste månaden.");
+                Console.WriteLine("4. Hämta de tre mest köpta produkterna.");
+                Console.WriteLine("5. Hämta alla kategorier och hur många produkter som är i dom.");
+                Console.WriteLine("6. Avsluta programmet.");
 
                 int choice = 0;
 
@@ -46,6 +47,9 @@ namespace Labb1_LINQ
                         PrintThreeMostOrderedProducts();
                         break;
                     case 5:
+                        PrintAllCategoriesAndAmountOfProducts();
+                        break;
+                    case 6:
                         loopActive = false;
                         break;
                     default:
@@ -183,6 +187,38 @@ namespace Labb1_LINQ
                 }
                 catch ( Exception ex )
                 {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        public static void PrintAllCategoriesAndAmountOfProducts()
+        {
+            using(var context = new InternetShopContext())
+            {
+                try
+                {
+                    var categories = context.Categories
+                        .Include(p => p.Products)
+                        .Select(c => new { c.Name, c.Description, c.Products.Count });
+
+                    if(categories != null)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("| Kategori | Antal Produkter |");
+
+                        foreach(var category in categories)
+                        {
+                            Console.WriteLine($"| {category.Name} | {category.Count} |");
+                        }
+
+                        Console.WriteLine();
+                        Console.WriteLine("Tryck enter för att gå tillbaka till menyn.");
+                        Console.ReadLine();
+                    }
+                }
+                catch( Exception ex )
+                { 
                     Console.WriteLine(ex.Message);
                 }
             }
