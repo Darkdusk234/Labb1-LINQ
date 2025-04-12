@@ -22,7 +22,8 @@ namespace Labb1_LINQ
                 Console.WriteLine("3. Hämta det totala order värdet för alla ordrar gjorda den senaste månaden.");
                 Console.WriteLine("4. Hämta de tre mest köpta produkterna.");
                 Console.WriteLine("5. Hämta alla kategorier och hur många produkter som är i dom.");
-                Console.WriteLine("6. Avsluta programmet.");
+                Console.WriteLine("6. Hämta alla ordrar över tusen i kostnad.");
+                Console.WriteLine("7. Avsluta programmet.");
 
                 int choice = 0;
 
@@ -50,6 +51,9 @@ namespace Labb1_LINQ
                         PrintAllCategoriesAndAmountOfProducts();
                         break;
                     case 6:
+                        PrintOrdersOverThousand();
+                        break;
+                    case 7:
                         loopActive = false;
                         break;
                     default:
@@ -219,6 +223,55 @@ namespace Labb1_LINQ
                 }
                 catch( Exception ex )
                 { 
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        public static void PrintOrdersOverThousand()
+        {
+            using(var context = new InternetShopContext())
+            {
+                try
+                {
+                    var details = context.Orders
+                        .Where(o => o.TotalAmount > 1000)
+                        .Include(o => o.OrderDetails)
+                        .ThenInclude(o => o.Product)
+                        .Include(c => c.Customer)
+                        .Select(o => new
+                        {
+                            o.OrderDate,
+                            o.TotalAmount,
+                            o.Status,
+                            customer = new { o.Customer.Name, o.Customer.Email, o.Customer.Phone, o.Customer.Adress },
+                            o.OrderDetails
+                        });
+
+                    if(details != null)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("| Order datum | Totala beloppet | Order status | Kundnamn | Kund Email | kund telefonnummer | Kund adress |");
+
+                        foreach(var order in details)
+                        {
+                            Console.WriteLine($"| {order.OrderDate} | {order.TotalAmount} | {order.Status} | {order.customer.Name} | {order.customer.Email} | {(order.customer.Phone != null ? order.customer.Phone : "N/A")} | {(order.customer.Adress != null ? order.customer.Adress : "N/A")} |");
+                            Console.WriteLine("      -| Produkt Namn | Order mängd | Enhets pris |");
+
+                            foreach (var od in order.OrderDetails)
+                            {
+                                Console.WriteLine($"      -| {od.Product.Name} | {od.Quantity} | {od.UnitPrice} |");
+                            }
+                            Console.WriteLine();
+                        }
+
+                        Console.WriteLine();
+                        Console.WriteLine("Tryck enter för att gå tillbaka till menyn.");
+                        Console.ReadLine();
+                    }
+                }
+                catch(Exception ex )
+                {
                     Console.WriteLine(ex.Message);
                 }
             }

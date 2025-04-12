@@ -16,5 +16,7 @@ namespace Labb1_LINQ.Models
 
         //Navigation Properties
         public Customer Customer { get; set; } = null!;
+
+        public ICollection<OrderDetail> OrderDetails { get; set; } = null!;
     }
 }
